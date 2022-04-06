@@ -115,14 +115,26 @@ app.get("/about", function(req, res){
 
 app.post('/delete',function (req,res) {
   const checkboxitem = req.body.checkbox
-  Item.findByIdAndRemove(checkboxitem,function (err) {
-    if(err){
-      console.log(err);
-    }else{
-      console.log('item removido com  sucesso');
-      res.redirect('/')
-    }
-  })
+  const listName = req.body.listName
+
+  if(listName=== 'Hoje'){
+    Item.findByIdAndRemove(checkboxitem,function (err) {
+      if(!err){
+        console.log('item removido com  sucesso');
+        res.redirect('/')
+      }
+    })
+
+  }else{
+    List.findOneAndUpdate({name:listName},{$pull:{item:{_id:checkboxitem}}},function (err,foundList) {
+      if(!err){
+        res.redirect('/'+listName)
+      }
+    })
+  }
+
+
+
 })
 
 
